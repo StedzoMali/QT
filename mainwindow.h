@@ -17,19 +17,20 @@
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
+private slots:
+    void init();
+    void handleSubmit();
+    void handleCancel();
+
 
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-private slots:
-    void init();
+private:
     QVBoxLayout *layout;
     QWidget *centralWidget;
     QPushButton *myButton1;
     QPushButton *myButton2;
-    void handleButtonClick();
-    void handleSubmit();
-    void handleCancel();
     QSpinBox  *idSpinBox;
     QLineEdit *titleLineEdit;
     QLineEdit *authorLineEdit;

@@ -31,6 +31,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(myButton1, &QPushButton::clicked,this, &MainWindow::close);
 
+
     submitButton = new QPushButton("Submit ",this);
     cancelButton = new QPushButton("cancel", this);
 
@@ -90,4 +91,7 @@ void MainWindow::handleSubmit(){
     }else {
         qDebug() << "vnesuvanjeto e uspeshno ";
     }
+}
+void MainWindow::handleCancel(){
+    this->close();
 }
