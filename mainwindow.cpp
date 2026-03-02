@@ -21,19 +21,28 @@ MainWindow::MainWindow(QWidget *parent)
 
     init();//konekcija na psql
 
+    QSqlTableModel *model = new QSqlTableModel;
+    model->setTable("books");
+    model->select();//ABSTRAKCIJA NA SQL DATA
+
+    QTableView *tableView = new QTableView;
+    tableView->setModel(model);//TABELA SHTO E SAMO TABELA BEZ DA ZNAE NISTO
+
     layout = new QVBoxLayout(centralWidget);//vertikalniot layout
     myButton1 = new QPushButton("Submit",this);
     layout->addWidget(myButton1);//kopceto go stava na stack
+    layout->addWidget(tableView);// DODAVANJE NA LAYOUTOT
 
     myButton2 = new QPushButton("Cancel",this);
     layout->addWidget(myButton2);//2kopce se stava na stack
 
 
+
     connect(myButton1, &QPushButton::clicked,this, &MainWindow::close);
 
 
-    submitButton = new QPushButton("Submit ",this);
-    cancelButton = new QPushButton("cancel", this);
+    submitButton = new QPushButton("Submit ",this);//SUBMIT BUTTON + HANDLE SUBMIT DOLE
+    cancelButton = new QPushButton("cancel", this);//CANCEL BUTTON + HANDLE CANCEL DOLE
 
     layout->addWidget(idSpinBox);
     layout->addWidget(titleLineEdit);

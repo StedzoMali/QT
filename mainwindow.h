@@ -13,14 +13,16 @@
 #include <QVBoxLayout>
 #include <QSpinBox>
 #include <QLineEdit>
+#include <QTableView>
+#include <QSqlTableModel>
 
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
 private slots:
     void init();
-    void handleSubmit();
-    void handleCancel();
+    void handleSubmit();// SUBMIT BUTTON VO SOURCE
+    void handleCancel();// CANCEL BUTTON VO SOURCE
 
 
 public:
@@ -39,5 +41,8 @@ private:
     QSpinBox  *copiesSpinBox;
     QPushButton *submitButton;
     QPushButton *cancelButton;
+    QTableView *tableView;
+
+
 };
 #endif // MAINWINDOW_H
