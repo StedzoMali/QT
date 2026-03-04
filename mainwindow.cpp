@@ -4,10 +4,36 @@
 #include <QSqlError>
 #include <QVBoxLayout>
 #include <QPushButton>
+#include "sqlstore.h"
+
+
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
+    init();//konekcija na psql
+
+    tableView = new QTableView(this);
+    tableView->setModel(m_model);
+
+    m_model = new QSqlQueryModel(this);
+    m_model->setQuery(SqlStore::Support::get("PODATOCITE_OD_BAZATA"));
+    tableView->setModel(m_model);
+    tableView->resizeColumnsToContents();
+    tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    tableView->setSelectionMode(QAbstractItemView::SingleSelection);
+    tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    tableView->setSortingEnabled(true);
+    tableView->setFrameStyle(1);
+
+
+    if (m_model->lastError().isValid()) {
+        qDebug()<<"Greska vo SQL"<< m_model->lastError().text();
+    }
+
+
+
+
     idSpinBox = new QSpinBox(this);
     titleLineEdit = new QLineEdit(this);
     authorLineEdit = new QLineEdit(this);
@@ -19,27 +45,10 @@ MainWindow::MainWindow(QWidget *parent)
     centralWidget = new QWidget(this);
     setCentralWidget(centralWidget);    //"podot" na noviot prozorec
 
-    init();//konekcija na psql
 
-    QSqlTableModel *model = new QSqlTableModel;
-    model->setTable("books");
-    model->select();//ABSTRAKCIJA NA SQL DATA
-
-    QTableView *tableView = new QTableView;
-    tableView->setModel(model);//TABELA SHTO E SAMO TABELA BEZ DA ZNAE NISTO
 
     layout = new QVBoxLayout(centralWidget);//vertikalniot layout
-    myButton1 = new QPushButton("Submit",this);
-    layout->addWidget(myButton1);//kopceto go stava na stack
     layout->addWidget(tableView);// DODAVANJE NA LAYOUTOT
-
-    myButton2 = new QPushButton("Cancel",this);
-    layout->addWidget(myButton2);//2kopce se stava na stack
-
-
-
-    connect(myButton1, &QPushButton::clicked,this, &MainWindow::close);
-
 
     submitButton = new QPushButton("Submit ",this);//SUBMIT BUTTON + HANDLE SUBMIT DOLE
     cancelButton = new QPushButton("cancel", this);//CANCEL BUTTON + HANDLE CANCEL DOLE
@@ -67,7 +76,7 @@ MainWindow::~MainWindow()
 void MainWindow::init()
 {
     QSqlDatabase db = QSqlDatabase::addDatabase("QPSQL");
-
+    m_model = new QSqlQueryModel(this);
     db.setHostName("localhost");
     db.setPort(5432);
     db.setDatabaseName("localdb");
@@ -104,3 +113,5 @@ void MainWindow::handleSubmit(){
 void MainWindow::handleCancel(){
     this->close();
 }
+
+
