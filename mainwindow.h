@@ -15,15 +15,15 @@
 #include <QLineEdit>
 #include <QTableView>
 #include <QSqlTableModel>
+#include <QSqlQueryModel>
+#include <QString>
 
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
 private slots:
-    void init();
     void handleSubmit();// SUBMIT BUTTON VO SOURCE
     void handleCancel();// CANCEL BUTTON VO SOURCE
-
 
 public:
     MainWindow(QWidget *parent = nullptr);
@@ -42,6 +42,8 @@ private:
     QPushButton *submitButton;
     QPushButton *cancelButton;
     QTableView *tableView;
+    QSqlQueryModel *m_model;
+
 
 
 };
