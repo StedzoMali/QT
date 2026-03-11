@@ -11,7 +11,8 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
 
-    m_model = new QSqlQueryModel(this);
+    auto m_model = new QSqlQueryModel(this);
+
     auto tableView = new QTableView(this);
     tableView->setModel(m_model);
 
@@ -32,12 +33,12 @@ MainWindow::MainWindow(QWidget *parent)
 
 
     auto queryButton = new QPushButton("New Books",this);
-    idSpinBox = new QSpinBox(this);
-    titleLineEdit = new QLineEdit(this);
-    authorLineEdit = new QLineEdit(this);
-    genreLineEdit = new QLineEdit(this);
-    yearSpinBox = new QSpinBox(this);
-    copiesSpinBox = new QSpinBox(this);
+    auto idSpinBox = new QSpinBox(this);
+    auto titleLineEdit = new QLineEdit(this);
+    auto authorLineEdit = new QLineEdit(this);
+    auto genreLineEdit = new QLineEdit(this);
+    auto yearSpinBox = new QSpinBox(this);
+    auto copiesSpinBox = new QSpinBox(this);
 
     auto centralWidget = new QWidget(this);
     setCentralWidget(centralWidget);
@@ -64,9 +65,36 @@ MainWindow::MainWindow(QWidget *parent)
     formLayout->addWidget(cancelButton);
     formLayout->addWidget(queryButton);
 
-    connect(queryButton, &QPushButton::clicked,this,&MainWindow::handleQuery);
-    connect(submitButton, &QPushButton::clicked, this, &MainWindow::handleSubmit);
+    connect(queryButton, &QPushButton::clicked, this, [=]() {
+        m_model->setQuery(SqlStore::Support::get("GET_ALL_BOOKS_BY_PUBLISHED_YEAR"));
+        tableView->resizeColumnsToContents();
+    });
+
+    connect(submitButton, &QPushButton::clicked, this, [=]() {
+        QSqlQuery query;
+        query.prepare(R"(
+            INSERT INTO books
+            (book_id, title, author, genre, published_year, copies_available)
+            VALUES (:id, :title, :author, :genre, :year, :copies)
+        )");
+        query.bindValue(":id", idSpinBox->value());
+        query.bindValue(":title", titleLineEdit->text());
+        query.bindValue(":author", authorLineEdit->text());
+        query.bindValue(":genre", genreLineEdit->text());
+        query.bindValue(":year", yearSpinBox->value());
+        query.bindValue(":copies", copiesSpinBox->value());
+
+        if (!query.exec()) {
+            qDebug() << "Insert failed:" << query.lastError().text();
+        } else {
+            m_model->setQuery(SqlStore::Support::get("PODATOCITE_OD_TABELATA"));
+            tableView->resizeColumnsToContents();
+            qDebug() << "Insert successful!";
+        }
+    });
+
     connect(cancelButton, &QPushButton::clicked, this, &MainWindow::close);
+
     titleLineEdit->setPlaceholderText("Book Title");
     authorLineEdit->setPlaceholderText("Author Name");
     genreLineEdit->setPlaceholderText("Genre");
@@ -74,28 +102,4 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-}
-
-void MainWindow::handleSubmit(){
-    QSqlQuery query;
-
-    query.prepare("INSERT INTO books (book_id, title, author, genre, published_year, copies_available) "
-     "VALUES (:id, :title, :author, :genre, :year, :copies)");
-
-    query.bindValue(":id", idSpinBox->value());
-    query.bindValue(":title", titleLineEdit->text());
-    query.bindValue(":author", authorLineEdit->text());
-    query.bindValue(":genre", genreLineEdit->text());
-    query.bindValue(":year", yearSpinBox->value());
-    query.bindValue(":copies", copiesSpinBox->value());
-
-    if (!query.exec()){
-        qDebug() << "Vnesuvanjeto e neuspeshno " << query.lastError().text();
-    }else {
-        m_model->setQuery(SqlStore::Support::get("PODATOCITE_OD_TABELATA"));
-        qDebug() << "vnesuvanjeto e uspeshno ";
-    }
-}
-void MainWindow::handleQuery(){
-    m_model->setQuery(SqlStore::Support::get("GET_ALL_BOOKS_BY_PUBLISHED_YEAR"));
 }
