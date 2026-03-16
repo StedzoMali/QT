@@ -6,6 +6,7 @@
 #include <QPushButton>
 #include "sqlstore.h"
 #include <QHBoxLayout>
+#include "logs.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -51,7 +52,6 @@ MainWindow::MainWindow(QWidget *parent)
     mainLayout->setStretchFactor(tableView, 2);
     mainLayout->setStretchFactor(formLayout, 1);
 
-    // then add widgets to formLayout below...
     auto submitButton = new QPushButton("Submit ",this);//SUBMIT BUTTON + HANDLE SUBMIT DOLE
     auto cancelButton = new QPushButton("cancel", this);//CANCEL BUTTON + HANDLE CANCEL DOLE
 
@@ -83,7 +83,7 @@ MainWindow::MainWindow(QWidget *parent)
         query.bindValue(":genre", genreLineEdit->text());
         query.bindValue(":year", yearSpinBox->value());
         query.bindValue(":copies", copiesSpinBox->value());
-
+        QString ipAddress = Logger::getCurrentIPAddress();
         if (!query.exec()) {
             qDebug() << "Insert failed:" << query.lastError().text();
         } else {
@@ -99,6 +99,7 @@ MainWindow::MainWindow(QWidget *parent)
     authorLineEdit->setPlaceholderText("Author Name");
     genreLineEdit->setPlaceholderText("Genre");
 }
+
 
 MainWindow::~MainWindow()
 {

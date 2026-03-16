@@ -1,4 +1,4 @@
-QT       += core gui sql widgets
+QT       += core gui sql widgets network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -10,12 +10,14 @@ CONFIG += c++17
 
 SOURCES += \
     dbmanager.cpp \
+    logs.cpp \
     main.cpp \
     mainwindow.cpp \
     sqlstore.cpp
 
 HEADERS += \
     dbmanager.h \
+    logs.h \
     mainwindow.h \
     sqlstore.h
 
